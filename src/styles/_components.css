@@ -1,0 +1,28 @@
+#env {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: cyan;
+  z-index: -1;
+}
+
+#ground {
+  --_h: 25%;
+  --ratio: 2/3;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: var(--_h);
+  /* border: solid 5px blue; */
+  
+  &::after {
+    content: '';
+    position: absolute;
+    height: calc(100% * var(--ratio));
+    width: 100%;
+    bottom: 0;
+    background: #40a02b;
+  }
+}
+
+

@@ -1,4 +1,4 @@
-#env {
+#area {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -6,7 +6,7 @@
   z-index: -1;
 }
 
-#ground {
+#floor {
   --_h: 25%;
   --ratio: 2/3;
   position: absolute;

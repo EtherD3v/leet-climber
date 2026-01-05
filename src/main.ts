@@ -1,38 +1,41 @@
 const canvas = document.querySelector("canvas")!;
 
-// dimensions de la fenêtre pour initaliser le canvas
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// initialisation des objets de l'environnement
-const environment = document.querySelector("env")!;
-const ground = document.querySelector("#ground")!;
-const groundRect = ground.getBoundingClientRect();
+const area = document.querySelector("#area")!;
+const floor = document.querySelector("#floor")!;
+const floorRect = floor.getBoundingClientRect();
 
-const vector = 
+const defaultBounds = 
 {
-  xmin: groundRect.left,
-  xmax: groundRect.right,
-  ymin: groundRect.top,
-  ymax: groundRect.bottom
+  xmin: floorRect.left,
+  xmax: floorRect.right,
+  ymin: floorRect.top,
+  ymax: floorRect.bottom
 }
+
+
+class Game {
+  private canvas: HTMLCanvasElement;
+  private events: Record<string, number>;
+}
+
 
 class Player {
   private x: number;
   private y: number;
   private speed: number = 10;
-  private events: Record<string, number>;
-  private vector: typeof vector;
-  private canvas: HTMLCanvasElement;
+  private defaultBounds: typeof defaultBounds;
   private ctx: CanvasRenderingContext2D;
 
-  constructor(canvas, vector, side: number, x: number = vector.xmin, y: number = vector.ymin) {
+  constructor(canvas, defaultBounds, side: number, x: number = defaultBounds.xmin, y: number = defaultBounds.ymin) {
     this.x = x;
     this.y = y;
     this.side = side;
-    this.vector = vector;
+    this.defaultBounds = defaultBounds;
     this.canvas = canvas;
-    this.ctx = canvas.getContext("2d");
+    this.ctx = canvas.getContext("2d")!;
     
     this.events = {
       ArrowLeft: -1,
@@ -42,11 +45,12 @@ class Player {
     window.addEventListener("keydown", e => this.move(e));
   }
   
+
   move(e: KeyboardEvent) {
     if (this.events[e.key] !== undefined) {
       this.x += this.events[e.key] * this.speed;
 
-      this.x = Math.max(this.vector.xmin, Math.min(this.vector.xmax - this.side, this.x));
+      this.x = Math.max(this.defaultBounds.xmin, Math.min(this.defaultBounds.xmax - this.side, this.x));
     }
 
     this.draw();
@@ -59,8 +63,13 @@ class Player {
   }
 }
 
-const SIDE = groundRect.height / 3;
-const X = Math.floor((vector.xmin + vector.xmax) / 2) - SIDE / 2;
+const update = (): void => {
+  player.draw()
+  requestAnimationFrame(update)
+}
 
-const player = new Player(canvas, vector, SIDE, X);
-player.draw()
+const SIDE = floorRect.height / 3;
+const X = Math.floor((defaultBounds.xmin + defaultBounds.xmax) / 2) - SIDE / 2;
+
+const player = new Player(canvas, defaultBounds, SIDE, X);
+update();

@@ -1,47 +1,73 @@
 export default class Player {
+  /* Classe qui implémente le joueur
 
-  private sideLength: number | null = null;
-  private speed: number = 5;
-  private xCoord: number;
-  private yCoord: number;
-  private backgroundColor: string = "red";
-  private canvas: HTMLCanvasElement;
-  private ctx: CanvasRenderingContext2D;
-  private events: Record<string, number> = {
-    ArrowLeft: -1,
-    ArrowRight: 1,
-  }
+    * Attributs :
+      * velocity : vitesse instantanée 
+      * x : coordonnée en x 
+      * y : coordonnée en y
 
-  constructor(canvas: HTMLCanvasElement, floorRect: typeof floorRect) {
-    this.canvas = canvas;
-    this.ctx = canvas.getContext("2d");
+  */
 
-    this.floorRect = floorRect;
-    this.sideLength = 1/3 * floorRect.height;
+  private velocityX: number = 10;
+  private velocityY: number = this.velocityX;
+  private velocityDecreaseCoeff = 0.95;
+  private x: number = 50;
+  private y: number;
+  private ctx: canvasRenderingContext2D;
+  private sideLength: number = 40;
+  private floorData;
+  private defaultPlacement: {x: number, y: number};
+  private isJumping = false;
+  private isLanding = false;
+  private jumpHeight = 80;
 
-    this.xCoord = (floorRect.width - this.sideLength) / 2;
-    this.yCoord = floorRect.y;
-
-    this.draw()
+  constructor(ctx: canvasRenderingContext2D, floorData)  {
+    this.ctx = ctx;
+    this.floorData = floorData;
+    this.y = this.floorData.top - this.sideLength;
+    this.defaultPlacement = {x: this.x, y: this.y};
   }
   
-  move (e: KeyboardEvent): void {
-    if (e.key in this.events) {
+  jump () {
 
-      this.xCoord += this.events[e.key] * this.speed;
+    /* Fait sauter le joueur jusqu'à la hauteur `jumpHeigh`
+      * Phase 1 : montée 
+      * Phase 2 : descente
+    */
 
-      this.xCoord = Math.max(
-        0, 
-        Math.min(
-          this.floorRect.width - this.sideLength,
-          this.xCoord + this.events[e.key] * this.speed
-        )
-      );
-    }
-  } 
+    if(this.y > (this.defaultPlacement.y - this.jumpHeight) && !this.isLanding) {
 
-  draw(): void {
-    this.ctx.fillStyle = this.backgroundColor;
-    this.ctx.fillRect(this.xCoord, this.yCoord, this.sideLength, this.sideLength)
+      this.isJumping = true;
+      this.jumpVelocity *= this.velocityDecreaseCoeff;
+      this.y -= this.jumpVelocity;
+
+      if (this.y < this.defaultPlacement.y - this.jumpHeight) {
+        this.isLanding = true;
+        this.y = this.defaultPlacement.y - this.jumpHeight;
+      }
+    } else if (this.y < this.defaultPlacement.y && this.isLanding) {
+        this.jumpVelocity *= (1 / this.velocityDecreaseCoeff);
+        this.y += this.jumpVelocity;
+        
+        if (this.y > this.defaultPlacement.y) {
+          this.y = this.defaultPlacement.y;
+          this.jumpVelocity = this.velocity;
+          this.isJumping = false;
+          this.isLanding = false;
+        }
+      }
   }
+
+  draw() {
+    this.ctx.fillStyle = "red";
+    this.ctx.fillRect(this.x, this.y, this.sideLength, this.sideLength) ;
+  }
+
+  update () {
+    if (this.isJumping) this.jump();
+    else this.x = Math.max(0, Math.min(this.x, this.floorData.width - this.sideLength));
+    this.draw();
+  }
+
 }
+

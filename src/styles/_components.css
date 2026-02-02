@@ -1,38 +1,21 @@
-canvas {
-  display: block;
-  height: 100%; 
-  width: 100%;
-  z-index: 1;
+:root {
+  --sky-h: 85%;
 }
 
-#area {
+#sky {
   position: absolute;
   top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
+  height: var(--sky-h);
   background: cyan;
-  z-index: -2;
+  z-index: -1;
 }
 
-#floor {
-  --floor-height: 25%;
-  --green-ratio: 2/3;
+#ground {
   position: absolute;
   bottom: 0;
   width: 100%;
+  height: calc(100% - var(--sky-h));
+  background: limegreen;
   z-index: -1;
-  height: var(--floor-height);
-  border: solid 1px black;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    height: calc(100% * var(--green-ratio));
-    width: 100%;
-    bottom: 0;
-    background: #40a02b;
-  }
 }
-
-

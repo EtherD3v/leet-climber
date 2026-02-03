@@ -11,7 +11,7 @@
   z-index: -1;
 }
 
-#ground {
+#floor {
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -19,3 +19,4 @@
   background: limegreen;
   z-index: -1;
 }
+

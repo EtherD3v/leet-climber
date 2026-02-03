@@ -1,31 +1,32 @@
 export default class Player {
-  /* Classe qui implémente le joueur
+  
+  /* Implements player
 
-    * Attributs :
-      * velocity : vitesse instantanée 
-      * x : coordonnée en x 
-      * y : coordonnée en y
+    * Properties :
+      * velocity : snap velocity
+      * x : x coord 
+      * y : y coord
 
   */
 
-  private velocityX: number = 10;
-  private velocityY: number = this.velocityX;
-  private velocityDecreaseCoeff = 0.95;
-  private x: number = 50;
-  private y: number;
   private ctx: canvasRenderingContext2D;
-  private sideLength: number = 40;
-  private floorData;
-  private defaultPlacement: {x: number, y: number};
-  private isJumping = false;
-  private isLanding = false;
-  private jumpHeight = 80;
+  public events;
 
-  constructor(ctx: canvasRenderingContext2D, floorData)  {
+  private velocityX: number = 4;
+  private velocityY: number = 10;
+  private GRAVITY = .5;
+
+  private sideLength: number = 40;
+  private x: number = 50;
+  private y: number = document.querySelector("#floor").getBoundingClientRect().top - this.sideLength;
+  private defaultPlacement = {x: this.x, y: this.y};
+
+  public isJumping = false;
+  private jumpHeight = 10;
+
+  constructor(ctx: canvasRenderingContext2D, events)  {
     this.ctx = ctx;
-    this.floorData = floorData;
-    this.y = this.floorData.top - this.sideLength;
-    this.defaultPlacement = {x: this.x, y: this.y};
+    this.events = events;
   }
   
   jump () {
@@ -34,28 +35,21 @@ export default class Player {
       * Phase 1 : montée 
       * Phase 2 : descente
     */
-
-    if(this.y > (this.defaultPlacement.y - this.jumpHeight) && !this.isLanding) {
-
+    
+    if (!this.isJumping) {
       this.isJumping = true;
-      this.jumpVelocity *= this.velocityDecreaseCoeff;
-      this.y -= this.jumpVelocity;
+      this.velocityY = this.jumpHeight;
+    }
+    else {
+      this.velocityY -= this.GRAVITY;
+      this.y -= this.velocityY;
 
-      if (this.y < this.defaultPlacement.y - this.jumpHeight) {
-        this.isLanding = true;
-        this.y = this.defaultPlacement.y - this.jumpHeight;
+      if (this.y >= this.defaultPlacement.y) {
+        this.velocityY = 0;
+        this.y = this.defaultPlacement.y;
+        this.isJumping = false;
       }
-    } else if (this.y < this.defaultPlacement.y && this.isLanding) {
-        this.jumpVelocity *= (1 / this.velocityDecreaseCoeff);
-        this.y += this.jumpVelocity;
-        
-        if (this.y > this.defaultPlacement.y) {
-          this.y = this.defaultPlacement.y;
-          this.jumpVelocity = this.velocity;
-          this.isJumping = false;
-          this.isLanding = false;
-        }
-      }
+    }
   }
 
   draw() {
@@ -65,9 +59,21 @@ export default class Player {
 
   update () {
     if (this.isJumping) this.jump();
-    else this.x = Math.max(0, Math.min(this.x, this.floorData.width - this.sideLength));
+    this.x = Math.max (
+      0, Math.min (
+        this.x, (window.innerWidth - this.sideLength)
+      )
+    );
+    
+    if (!this.isJumping && this.events.Space) {
+      this.jump();
+    }
+    if (this.events.ArrowLeft) {
+      this.x -= this.velocityX;
+    }
+    if (this.events.ArrowRight) {
+      this.x += this.velocityX;
+    }
     this.draw();
   }
-
 }
-

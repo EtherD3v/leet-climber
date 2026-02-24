@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@commitlint/types": "^20.4.0",
+    "commitlint": "^20.4.2",
     "conventional-changelog-conventionalcommits": "^9.1.0",
     "husky": "^9.1.7",
     "typescript": "~5.9.3",

@@ -3,13 +3,13 @@ export default class Plateform {
     * allows player to jump on it
   */
 
-  private ctx: canvasRenderingContext2D;
-  private x: number;
-  private y: number;
-  private width: number;
-  private height: number;
+  private ctx: CanvasRenderingContext2D;
+  public x: number;
+  public y: number;
+  public width: number;
+  public height: number;
 
-  constructor(ctx: canvasRenderingContext2D, x, y, width, height) {
+  constructor(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
     this.ctx = ctx;
     this.x = x;
     this.y = y;

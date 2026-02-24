@@ -9,24 +9,25 @@ export default class Player {
 
   */
 
-  private ctx: canvasRenderingContext2D;
-  public events;
+  private ctx: CanvasRenderingContext2D;
+  public events: {Space: boolean, ArrowRight: boolean, ArrowLeft: boolean};
 
-  private velocityX: number = 4;
-  private velocityY: number = 10;
-  private GRAVITY = .5;
+  public velocityX: number = 0;
+  public velocityY: number = 0;
+  private GRAVITY = .6;
 
-  private sideLength: number = 40;
-  private x: number = 50;
-  private y: number = document.querySelector("#floor").getBoundingClientRect().top - this.sideLength;
-  private defaultPlacement = {x: this.x, y: this.y};
+  public sideLength: number = 40;
+  public x: number = 50;
+  public y: number = document.querySelector("#floor")!.getBoundingClientRect().top - this.sideLength;
+  public defaultPlacement = {x: this.x, y: this.y};
 
   public isJumping = false;
-  private jumpHeight = 10;
+  private jumpHeight = 25;
 
-  constructor(ctx: canvasRenderingContext2D, events)  {
+  constructor(ctx: CanvasRenderingContext2D, events: {Space: boolean, ArrowRight: boolean, ArrowLeft: boolean})  {
     this.ctx = ctx;
     this.events = events;
+    this.velocityY = this.jumpHeight;
   }
   
   jump () {
@@ -38,7 +39,6 @@ export default class Player {
     
     if (!this.isJumping) {
       this.isJumping = true;
-      this.velocityY = this.jumpHeight;
     }
     else {
       this.velocityY -= this.GRAVITY;
@@ -59,21 +59,29 @@ export default class Player {
 
   update () {
     if (this.isJumping) this.jump();
-    this.x = Math.max (
-      0, Math.min (
-        this.x, (window.innerWidth - this.sideLength)
-      )
-    );
+    console.log(`velocityX : ${this.velocityX}`);
     
     if (!this.isJumping && this.events.Space) {
+      this.velocityY = 10;
       this.jump();
     }
-    if (this.events.ArrowLeft) {
-      this.x -= this.velocityX;
-    }
-    if (this.events.ArrowRight) {
+
+      
+    if (this.events.ArrowLeft && this.x - 0.5 >= 0) {
+      this.velocityX -= 0.5;
       this.x += this.velocityX;
     }
+    else if (this.events.ArrowRight && this.x + 0.5 <= window.innerWidth - this.sideLength) {
+      this.velocityX += 0.5;
+      this.x += this.velocityX;
+    }
+    else this.velocityX *= 0.9;
+
+    this.velocityX = Math.max (
+      -5, Math.min (
+        this.velocityX, 5
+      )
+    );
     this.draw();
   }
 }

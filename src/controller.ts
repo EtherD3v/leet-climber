@@ -1,5 +1,6 @@
 import Player from './components/player.ts';
 import Plateform from './components/plateform.ts';
+import Background from './components/background.ts';
 
 class EventController {
   /* Facilitates event management 
@@ -57,6 +58,7 @@ export default class CanvasController {
   constructor (ctx: CanvasRenderingContext2D) {
     this.ctx = ctx;
     this.eventController = new EventController(this.ctx);
+    this.background = new Background(this.ctx);
     this.player = new Player(ctx, this.eventController.keys.player);
     this.plateforms = [
       new Plateform(this.ctx, this.player.x + 100, this.player.y - 20, 100, 40),
@@ -77,6 +79,7 @@ export default class CanvasController {
   
   update () {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    this.background.update();
     this.player.events = this.eventController.keys.player;
     this.player.update();
     this.plateforms.forEach(plateform => plateform.update());

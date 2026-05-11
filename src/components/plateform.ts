@@ -1,5 +1,5 @@
 export default class Plateform {
-  /* Plateform object, such as a slab 
+  /* Plateform object, such as a slab
     * allows player to jump on it
   */
 

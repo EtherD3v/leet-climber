@@ -1,5 +1,5 @@
 // IMPORT
-import CanvasController from "./controller.ts";
+import CanvasController from "./controllers/CanvasController.ts";
 
 // INSTANCES, VAR
 
